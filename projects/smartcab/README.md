@@ -4,8 +4,9 @@
 
 ### Install
 
-This project requires **Python 3.6** with the [pygame](https://www.pygame.org/wiki/GettingStarted
-) library installed
+This project requires **Python 2.7** (*we have chosen to complete this project in Python 3.6, then we had to update the codes in various places including all 
+relevant print statements and also dictionary attributes with the [six](https://pythonhosted.org/six/) library) with the [pygame](https://www.pygame.org/wiki/GettingStarted
+) library installed.
 
 ### Code
 
