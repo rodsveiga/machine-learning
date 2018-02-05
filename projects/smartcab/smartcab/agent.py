@@ -75,8 +75,8 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Calculate the maximum Q-value of all actions for a given state
-
-        maxQ = None
+        # Remember: Q is a dictionaty and we want maximum values
+        maxQ = max(self.Q[state].values())
 
         return maxQ 
 
@@ -88,9 +88,14 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # When learning, check if the 'state' is not in the Q-table
-        # If it is not, create a new dictionary for that state
-        #   Then, for each action available, set the initial Q-value to 0.0
-
+        if self.learning:
+            if state not in self.Q.keys():
+                # If it is not, create a new dictionary for that state
+                self.Q[state] = {}
+                # Then, for each action available, set the initial Q-value to 0.0
+                for action in self.valid_actions:
+                    self.Q[state][action] = 0.0
+                    
         return
 
 
@@ -101,15 +106,22 @@ class LearningAgent(Agent):
         # Set the agent state and default action
         self.state = state
         self.next_waypoint = self.planner.next_waypoint()
-        action = None
-
+     
         ########### 
         ## TO DO ##
         ###########
         # When not learning, choose a random action
+        action = random.choice(self.valid_actions)
         # When learning, choose a random action with 'epsilon' probability
-        # Otherwise, choose an action with the highest Q-value for the current state
-        # Be sure that when choosing an action with highest Q-value that you randomly select between actions that "tie".
+        if self.learning:
+            if self.epsilon > random.random():
+                action = random.choice(self.valid_actions)
+            else:
+                #Otherwise, choose an action with the highest Q-value for the current state
+                actions_Q_highest = [ i for i,j in self.Q[state].itens() if j==self.get_maxQ(state) ]
+                # Be sure that when choosing an action with highest Q-value that you randomly select between actions that "tie".
+                action = random.choice(actions_Q_highest)
+            
         return action
 
 

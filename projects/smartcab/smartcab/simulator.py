@@ -35,7 +35,7 @@ class Simulator(object):
         'gray'    : (155, 155, 155)
     }
 
-    def __init__(self, env, size=None, update_delay=2.0, display=True, log_metrics=False, optimized=False):
+    def __init__(self, env, size=None, update_delay=0.01, display=False, log_metrics=True, optimized=False):
         self.env = env
         self.size = size if size is not None else ((self.env.grid_size[0] + 1) * self.env.block_size, (self.env.grid_size[1] + 2) * self.env.block_size)
         self.width, self.height = self.size
@@ -100,16 +100,16 @@ class Simulator(object):
                     self.log_filename = os.path.join("logs", "sim_default-learning.csv")
                     self.table_filename = os.path.join("logs","sim_default-learning.txt")
 
-                self.table_file = open(self.table_filename, 'wb')
+                self.table_file = open(self.table_filename, 'w')
             else:
                 self.log_filename = os.path.join("logs", "sim_no-learning.csv")
             
             self.log_fields = ['trial', 'testing', 'parameters', 'initial_deadline', 'final_deadline', 'net_reward', 'actions', 'success']
-            self.log_file = open(self.log_filename, 'wb')
+            self.log_file = open(self.log_filename, 'w')
             self.log_writer = csv.DictWriter(self.log_file, fieldnames=self.log_fields)
             self.log_writer.writeheader()
 
-    def run(self, tolerance=0.05, n_test=0):
+    def run(self, tolerance=0.05, n_test=10):
         """ Run a simulation of the environment. 
 
         'tolerance' is the minimum epsilon necessary to begin testing (if enabled)
