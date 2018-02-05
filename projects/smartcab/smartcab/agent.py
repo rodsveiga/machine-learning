@@ -8,7 +8,7 @@ class LearningAgent(Agent):
     """ An agent that learns to drive in the Smartcab world.
         This is the object you will be modifying. """ 
 
-    def __init__(self, env, learning=False, epsilon=1.0, alpha=0.5):
+    def __init__(self, env, learning=True, epsilon=1.0, alpha=0.5, threshold=0.05):
         super(LearningAgent, self).__init__(env)     # Set the agent in the evironment 
         self.planner = RoutePlanner(self.env, self)  # Create a route planner
         self.valid_actions = self.env.valid_actions  # The set of valid actions
@@ -23,6 +23,8 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
+        self.t = 0 # Integer counter
+        self.threshold = threshold
 
 
     def reset(self, destination=None, testing=False):
@@ -39,6 +41,13 @@ class LearningAgent(Agent):
         # Update epsilon using a decay function of your choice
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
+      
+        if testing:
+            self.epsilon = 0.0
+            self.alpha = 0.0
+        else:
+            self.epsilon = self.epsilon - self.threshold
+            self.t += 1
 
         return None
 
@@ -58,11 +67,11 @@ class LearningAgent(Agent):
         
         # NOTE : you are not allowed to engineer eatures outside of the inputs available.
         # Because the aim of this project is to teach Reinforcement Learning, we have placed 
-        # constraints in order for you to learn how to adjust epsilon and alpha, and thus learn about the balance between exploration and exploitation.
+        # constraints in order for you to learn how to adjust epsilon and alpha, and thus learn about the balance between        exploration and exploitation.
         # With the hand-engineered features, this learning process gets entirely negated.
         
         # Set 'state' as a tuple of relevant data for the agent        
-        state = None
+        state = (waypoint, inputs['light'], inputs['left'], inputs['oncoming'])
 
         return state
 
@@ -118,7 +127,7 @@ class LearningAgent(Agent):
                 action = random.choice(self.valid_actions)
             else:
                 #Otherwise, choose an action with the highest Q-value for the current state
-                actions_Q_highest = [ i for i,j in self.Q[state].itens() if j==self.get_maxQ(state) ]
+                actions_Q_highest = [ i for i,j in self.Q[state].items() if j==self.get_maxQ(state) ]
                 # Be sure that when choosing an action with highest Q-value that you randomly select between actions that "tie".
                 action = random.choice(actions_Q_highest)
             
@@ -135,6 +144,8 @@ class LearningAgent(Agent):
         ###########
         # When learning, implement the value iteration update rule
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
+        if self.learning:
+            self.Q[state][action] = self.alpha * reward + (1 - self.alpha)*self.Q[state][action]
 
         return
 
