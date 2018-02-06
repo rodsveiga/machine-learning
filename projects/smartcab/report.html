@@ -13182,6 +13182,7 @@ ZlXy/yQ1V0JJueVtAAAAAElFTkSuQmCC
 <li>The agent could reach its destination without breaking traffic rules if there was no <code>deadline</code> feature. Hence, this feature could be avoided in order to reduce the size of the state space and make the learning algorithm faster. </li>
 <li>In order to reduce the size of the state space by a factor 4, we will assume henceforth the <a href="https://driversed.com/driving-information/signs-signals-and-markings/right-of-way.aspx">Right-of-way rules</a>. Then we will not take into account the <code>right</code> contribution from <code>inputs</code>.</li>
 </ul>
+<p><strong>Note from the reviewer:</strong> <em>'Nice work identifying the relevant features for the state space and justifying their inclusion or exclusion. Another reason to exclude deadline is its negative impact on safety. If deadline is close to zero, would the agent still follow traffic rules or prefer to break them in order to reach to the destination faster?'</em></p>
 
 </div>
 </div>
@@ -13224,6 +13225,7 @@ ZlXy/yQ1V0JJueVtAAAAAElFTkSuQmCC
 <ul>
 <li>Yes, it seems a reasonably size for the space set. Perhaps hundreds of trails would be enough to learn a decent police for each possible state.</li>
 </ul>
+<p><strong>Note from the reviewer:</strong> <em>'The state size is correctly calculated. According to the <a href="https://en.wikipedia.org/wiki/Coupon_collector%27s_problem">coupon collector's problem</a>, the agent would need $N \log(N)$ trials to learn an optimal policy, where $N$ is the state size. Note that the number of trials required is also dependent on the learning rate.'</em></p>
 
 </div>
 </div>
@@ -16352,7 +16354,7 @@ AAAASUVORK5CYII=
 <li>The agent needed approximately 350 training trials before beginning testing. It is important to note all the training results do not change considerably after the training trial number 300. Definitely, without performance loss, we could work further on adjusting (increasing) the epsilon-tolerance value in order save time and do not run these last 50 training trials.</li>
 </ul>
 <ul>
-<li>The values chosen were $\epsilon_{\text{tolerance}} = 0.01$ and $\alpha = {0.8}$. This value for the epsilon-tolerance was used in order to increase the exploration of the environment: the number of training trails. The high value of the learning rate was set for the agent do not tend to consider only immediate rewards. If $\alpha$ is closer to one, the agent will consider future rewards with greater weight, willing to delay the reward.</li>
+<li>The values chosen were $\epsilon_{\text{tolerance}} = 0.01$ and $\alpha = {0.8}$. This value for the epsilon-tolerance was used in order to increase the exploration of the environment: the number of training trails. The high value of the learning rate was set for the agent do not tend to consider only immediate rewards. If $\alpha$ is closer to one, the agent will consider current rewards with greater weight over the learned Q-values.</li>
 </ul>
 <ul>
 <li>The improvement was huge. The default Q-learner had scored F and C for the safety and reliability rating, respectively. On the other hand, the improved Q-learner from this section has achieved the best possible ratings (A+), both for safety and reliability.</li>
@@ -16363,6 +16365,7 @@ AAAASUVORK5CYII=
 <ul>
 <li>Yes, the best possible ratings both for safety and reliability are satisfactory.</li>
 </ul>
+<p><strong>Note from the reviewer:</strong> <em>'Good job with the summary, although you could add more insights from the visuals. As the bad actions have decayed to near zero, and rewards and reliability are at their peak values, it can definitely be said that the agent has learnt an appropriate policy here.</em></p>
 
 </div>
 </div>
@@ -16421,8 +16424,8 @@ AAAASUVORK5CYII=
 </ul>
 <ul>
 <li>If <code>waypoint</code> = <code>right</code>:<ul>
-<li>If <code>oncoming</code>= <code>left</code>, then wait.   </li>
-<li>Otherwise go right.</li>
+<li>If <code>light</code>= <code>green</code>, then go right.</li>
+<li>If <code>light</code>= <code>red</code> and <code>left</code>= <code>forward</code>, then wait. Otherwise go right.</li>
 </ul>
 </li>
 </ul>
@@ -16459,35 +16462,26 @@ AAAASUVORK5CYII=
 -- forward : 0.25
 -- left : 0.45
 -- right : 1.22</p>
-<p>When the waypoint is right and there is no oncoming traffic, the agent correctly turns right.</p>
+<p>When the waypoint is right and the light is green, the agent correctly turns right.</p>
 </li>
 </ul>
 <p><strong> 4.</strong> Examples from the recorded Q-table in <code>'sim_improved-learning.txt'</code> text file which have not learned the optimal policy:</p>
 <ul>
-<li><p>(<code>right</code>, <code>red</code>, <code>None</code>, <code>left</code>)
--- None : 0.49
--- forward : -14.64
--- left : -10.31
--- right : 2.25</p>
-<p>When the waypoint is right and there is oncoming traffic from the left, the agent should wait.</p>
+<li><p>(<code>right</code>, <code>red</code>, <code>right</code>, <code>right</code>)
+-- None : 0.79
+-- forward : -7.72
+-- left : -40.20
+-- right : 0.00</p>
+<p>When the waypoint is right, the light is red and the left traffic is not headed forward, the agent should turn right.</p>
 </li>
 </ul>
 <ul>
-<li><p>(<code>right</code>, <code>green</code>, <code>None</code>, <code>left</code>)
--- None : -4.63
--- forward : 0.37
--- left : 0.33
--- right : 1.69</p>
-<p>When the waypoint is right and there is oncoming traffic from the left, the agent should wait.</p>
-</li>
-</ul>
-<ul>
-<li><p>(<code>right</code>, <code>red</code>, <code>forward</code>, <code>None</code>)
--- None : 1.70
--- forward : -39.33
--- left : -40.21
--- right : -19.34</p>
-<p>When the waypoint is right and there is no oncoming traffic from the left, the agent should turn right.</p>
+<li><p>(<code>right</code>, <code>green</code>, <code>right</code>, <code>right</code>)
+-- None : 0.00
+-- forward : 0.00
+-- left : 0.45
+-- right : 0.00</p>
+<p>When the waypoint is right and light is green, the agent should turn right.</p>
 </li>
 </ul>
 <p>At least in these examples the agent demonstrates problems with learning the optimal policy when <code>waypoint=right</code>.</p>
