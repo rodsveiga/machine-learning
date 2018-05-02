@@ -1,13 +1,6 @@
-
 % Default to the notebook output style
-
-    
-
-
+  
 % Inherit from the specified cell style.
-
-
-
 
     
 \documentclass[11pt]{article}
@@ -309,8 +302,8 @@ engaging in distracted behaviors.
 \section{Problem Statement}\label{problem-statement}
 
 
-\hspace{0.5cm} Given a dataset of 2D dashboard camera images, the idea is develop an
-machine learning algorithm to automatically classify driver's behavior.
+\hspace{0.5cm} Given a dataset of 2D dashboard camera images, the idea is to develop an machine learning algorithm to automatically classify driver's behavior. This task can be achieved by the extraction of relevant information stored in the training set, which is composed by labeled images (each label corresponds to a action the driver was doing when the picture was taken). The algorithm must learn the most important features from the training data and check its prediction performance in other images which are not part of the training set.
+ 
 Are they driving attentively, wearing their seatbelt, or taking a self
 with their friends in the backseat? Such an algorithm could be highly
 important to prevent accidents if it could automatically warn distracted
@@ -318,7 +311,7 @@ drivers based on their behavior captured by on-board cameras.
 
 \section{Datasets and Inputs}\label{datasets-and-inputs}
 
-\hspace{0.5cm} The dataset is composed by driver images, each taken in a car with a
+\hspace{0.5cm} The dataset is composed by driver images (training and test sets), each taken in a car with a
 driver doing something in the car (texting, eating, talking on the
 phone, makeup, reaching behind, etc).
 
@@ -351,6 +344,9 @@ There ten classes to predict are:
 The data files can be found
 \href{https://www.kaggle.com/c/state-farm-distracted-driver-detection/data}{here}.
 
+
+Both training and test sets images are going to be transformed in four dimension tensors to fed in \href{https://keras.io/}{Keras}. Particularly, in order to improve performance, the test set will be shuffled and part of it will be retrieved as a validation set.
+
 \paragraph{File descriptions}\label{file-descriptions}
 
 \begin{itemize}
@@ -374,22 +370,15 @@ Breed Prediction Project}, a multi-layer convolutional neural network
 optimization will be made by the minimization of the multi-class
 logarithmic loss described below.
 
-\section{Benchmark Model}\label{benchmark-model}
-
-\hspace{0.5cm} The leading model of the Kaggle's
-\href{https://www.kaggle.com/c/state-farm-distracted-driver-detection/leaderboard}{Public
-Learderboard} will be used as a benchmark model. It achieved a
-multi-class logarithm loss of 0.08689.
 
 \section{Evaluation Metrics}\label{evaluation-metrics}
 
-\hspace{0.5cm}  Following the challenge by Kaggle the models will be evaluated using
-the~multi-class logarithmic loss. Each image~has been labeled with one
+\hspace{0.5cm}  Following the \href{https://www.kaggle.com/c/state-farm-distracted-driver-detection#evaluation}{challenge} by Kaggle the models will be evaluated using
+the multi-class logarithmic loss (cross-entropy). Each image has been labeled with one
 true class. For each image, a set of predicted probabilities (one for
 every image) will be presented. The formula is then,
 
 \[ {\cal L}_{\text{log}} = −\frac{1}{N} \sum_{i=1}^{N} \sum_{j=1}^{m} y_{ij} \log( p_{ij}  )  \;, \]
-
 where \(N\) is the number of images in the test set, \(M\) is the number
 of image class labels, \(\log\)~is the natural logarithm,~\(y_{ij}\) is
 1 if observation~\(i\)~belongs to class~\(j\)~and 0 otherwise,
@@ -401,6 +390,18 @@ one because they are rescaled prior to being scored (each row is divided
 by the row sum). In order to avoid the extremes of the logarithm
 function, predicted probabilities are replaced
 with~\(\max(\min(p,1 - 10^{-15}) , 10^{-15})\).
+
+The logarithmic loss quantifies the accuracy of a classifier by penalizing false classifications. Minimizing the logarithmic loss is basically equivalent to maximizing the accuracy of the classifier.
+
+There are two main properties one would intuitively expects to interpret the cross-entropy as a cost function. Firstly, it is clear that $ {\cal L}_{\text{log}} \ge 0$. Secondly, if the predicted probabilities are close to the desired output for almost all training inputs, the cost ${\cal L}_{\text{log}}$ will be close to zero. However, these properties are also satisfied by more usual choices, like the quadratic cost. The advantage of the multi-class logarithmic loss function is that it avoids the 
+problem of \href{http://neuralnetworksanddeeplearning.com/chap3.html}{learning slowing down} caused by the derivative of the sigmoid function in the quadratic cost. 
+
+Additionally, logarithmic loss heavily penalizes classifiers that are confident about an incorrect classification.
+
+\section{Benchmark Model}\label{benchmark-model}
+
+\hspace{0.5cm} The hundred best placed models of the respective Kaggle's 
+\href{https://www.kaggle.com/c/state-farm-distracted-driver-detection/leaderboard}{competition} will be used as benchmark models. Although those results are calculated with approximately 69/100 of the test data, it seems reasonable to use these models as references, since they achieved the best performance in the competition. The champion accomplished a multi-class logarithm loss of 0.08739, while the tenth 0.14910. The fiftieth, in its turn, got 0.18954; the hundredth, 0.22594; among 1440 competitors.
 
 \section{Project Design}\label{project-design}
 
